@@ -1,4 +1,4 @@
-name: Secret Scan
+name: Scan Secrets with Git Secrets
 
 on:
   push:
@@ -10,16 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Action officielle pour cloner le code
-    
-    - name: Install git-secrets
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y git-secrets
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Run git-secrets scan
-      run: |
-        git secrets --install
-        git secrets --register-aws
-        git secrets --scan
+      - name: Set up Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Install git-secrets
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git-secrets
+
+      - name: Configure git-secrets
+        run: |
+          git secrets --install
+          git secrets --add 'AKIA[0-9A-Z]{16}'  # Ex. AWS Access Key
+          git secrets --add 'SECRET|PASSWORD|TOKEN'  # Ex. Mots sensibles
+
+      - name: Scan for secrets
+        run: |
+          echo "🔍 Scanning for secrets..."
+          git secrets --scan || (echo "❌ Secrets detected!" && exit 1)

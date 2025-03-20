@@ -10,8 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout complete repo
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Récupère tout l'historique Git
+
+      - name: Vérifier les fichiers présents
+        run: |
+          echo "📂 Liste des fichiers dans le repo:"
+          ls -R
 
       - name: Set up Git
         run: |
@@ -31,6 +38,11 @@ jobs:
           git secrets --add --allowed 'git secrets --add'  # Ignore cette ligne spécifique
           git secrets --add --allowed 'Ex. Mots sensibles'  # Ignore le commentaire
           git secrets --add --allowed '\.github/workflows/'  # Ignore le dossier workflows
+
+      - name: Vérification des règles de détection
+        run: |
+          echo "🔍 Vérification des règles..."
+          git config --get-all secrets.patterns
 
       - name: Scan for secrets
         run: |

@@ -28,6 +28,9 @@ jobs:
           git secrets --install
           git secrets --add 'AKIA[0-9A-Z]{16}'  # Ex. AWS Access Key
           git secrets --add 'SECRET|PASSWORD|TOKEN'  # Ex. Mots sensibles
+          git secrets --add --allowed 'git secrets --add'  # Ignore cette ligne spécifique
+          git secrets --add --allowed 'Ex. Mots sensibles'  # Ignore le commentaire
+          git secrets --add --allowed '\.github/workflows/'  # Ignore le dossier workflows
 
       - name: Scan for secrets
         run: |
